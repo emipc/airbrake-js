@@ -293,15 +293,18 @@ var define = false;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
+/* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
+            (typeof self !== "undefined" && self) ||
+            window;
+var apply = Function.prototype.apply;
 
 // DOM APIs, for completeness
 
 exports.setTimeout = function() {
-  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
+  return new Timeout(apply.call(setTimeout, scope, arguments), clearTimeout);
 };
 exports.setInterval = function() {
-  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
+  return new Timeout(apply.call(setInterval, scope, arguments), clearInterval);
 };
 exports.clearTimeout =
 exports.clearInterval = function(timeout) {
@@ -316,7 +319,7 @@ function Timeout(id, clearFn) {
 }
 Timeout.prototype.unref = Timeout.prototype.ref = function() {};
 Timeout.prototype.close = function() {
-  this._clearFn.call(window, this._id);
+  this._clearFn.call(scope, this._id);
 };
 
 // Does not start the time, just sets up the members needed.
@@ -344,7 +347,7 @@ exports._unrefActive = exports.active = function(item) {
 
 // setimmediate attaches itself to the global object
 __webpack_require__(/*! setimmediate */ "./node_modules/setimmediate/setImmediate.js");
-// On some exotic environments, it's not clear which object `setimmeidate` was
+// On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
 exports.setImmediate = (typeof self !== "undefined" && self.setImmediate) ||
@@ -1710,12 +1713,11 @@ var Historian = /** @class */ (function () {
             client.ignoreNextXHR++;
             setTimeout(function () { return client.ignoreNextXHR--; });
             var promise = oldFetch.apply(this, arguments);
-            promise.then(function (req) {
+            return promise.then(function (req) {
                 state.statusCode = req.status;
                 state.duration = new Date().getTime() - state.date.getTime();
                 client.pushHistory(state);
             });
-            return promise;
         };
     };
     Historian.prototype.xhr = function () {
@@ -2168,19 +2170,19 @@ function parse(err) {
 function processor(err) {
     var backtrace = [];
     if (!err.noStack) {
-        var frames_2 = parse(err);
-        if (frames_2.length === 0) {
+        var frames_1 = parse(err);
+        if (frames_1.length === 0) {
             try {
                 throw new Error('fake');
             }
             catch (fakeErr) {
-                frames_2 = parse(fakeErr);
-                frames_2.shift();
-                frames_2.shift();
+                frames_1 = parse(fakeErr);
+                frames_1.shift();
+                frames_1.shift();
             }
         }
-        for (var _i = 0, frames_1 = frames_2; _i < frames_1.length; _i++) {
-            var frame = frames_1[_i];
+        for (var _i = 0, frames_2 = frames_1; _i < frames_2.length; _i++) {
+            var frame = frames_2[_i];
             backtrace.push({
                 function: frame.functionName || '',
                 file: frame.fileName || '',

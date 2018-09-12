@@ -275,12 +275,11 @@ export default class Historian {
             setTimeout(() => client.ignoreNextXHR--);
 
             let promise = oldFetch.apply(this, arguments);
-            promise.then(function(req) {
+            return promise.then(function(req) {
                 state.statusCode = req.status;
                 state.duration = new Date().getTime() - state.date.getTime();
                 client.pushHistory(state);
             });
-            return promise;
         };
     }
 
