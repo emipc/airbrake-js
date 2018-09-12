@@ -279,6 +279,7 @@ export default class Historian {
                 state.statusCode = req.status;
                 state.duration = new Date().getTime() - state.date.getTime();
                 client.pushHistory(state);
+                return req;
             });
         };
     }
